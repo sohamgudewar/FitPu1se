@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../firebase_options.dart';
 
 final class AuthNotifier extends ChangeNotifier {
@@ -23,18 +22,11 @@ final class AuthNotifier extends ChangeNotifier {
   }
 
   Future<void> signInWithGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return;
-    final auth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: auth.accessToken,
-      idToken: auth.idToken,
-    );
-    await FirebaseAuth.instance.signInWithCredential(credential);
+    final provider = GoogleAuthProvider();
+    await FirebaseAuth.instance.signInWithPopup(provider);
   }
 
   Future<void> signOut() async {
-    await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
   }
 }
