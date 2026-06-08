@@ -11,10 +11,5 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Railway
-        run: npx -y @railway/cli up --verbose
-        working-directory: backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Trigger Railway Deploy
+        run: curl -X POST ${{ secrets.RAILWAY_DEPLOY_HOOK }}
