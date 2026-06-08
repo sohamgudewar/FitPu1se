@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+backend/.env
+fitpulse/build/
+fitpulse/.dart_tool/
+fitpulse/.packages
+fitpulse/.pub/
+fitpulse/.flutter-plugins
+fitpulse/.flutter-plugins-dependencies
+fitpulse/pubspec.lock
+.idea/
+.vscode/
+*.iml
+*.log
+*.tmp
