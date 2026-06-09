@@ -10,6 +10,7 @@ final class FoodLog {
   final double fatG;
   final double servingSize;
   final String servingUnit;
+  final String mealType;
   final DateTime createdAt;
 
   FoodLog({
@@ -22,6 +23,7 @@ final class FoodLog {
     required this.fatG,
     required this.servingSize,
     required this.servingUnit,
+    this.mealType = 'Snack',
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -34,6 +36,7 @@ final class FoodLog {
     'fat_g': fatG,
     'serving_size': servingSize,
     'serving_unit': servingUnit,
+    'meal_type': mealType,
     'created_at': Timestamp.fromDate(createdAt),
   };
 
@@ -48,6 +51,7 @@ final class FoodLog {
       fatG: (data['fat_g'] as num?)?.toDouble() ?? 0,
       servingSize: (data['serving_size'] as num?)?.toDouble() ?? 0,
       servingUnit: data['serving_unit'] as String? ?? 'g',
+      mealType: data['meal_type'] as String? ?? 'Snack',
       createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

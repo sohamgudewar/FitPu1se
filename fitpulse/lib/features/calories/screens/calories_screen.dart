@@ -65,20 +65,23 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
     }
   }
 
-  Future<void> _logScanResult() async {
+  void _logScanResult(double servingSize, String mealType) async {
     final user = ref.read(authProvider).user;
     if (user == null || _scanResult == null) return;
 
+    final base = (_scanResult!['serving_size'] ?? 100).toDouble();
+    final f = servingSize / base;
     final svc = ref.read(firestoreServiceProvider);
     final log = FoodLog(
       userId: user.uid,
       foodName: _scanResult!['food_name'] ?? 'Unknown',
-      calories: (_scanResult!['calories'] ?? 0).toDouble(),
-      proteinG: (_scanResult!['protein_g'] ?? 0).toDouble(),
-      carbsG: (_scanResult!['carbs_g'] ?? 0).toDouble(),
-      fatG: (_scanResult!['fat_g'] ?? 0).toDouble(),
-      servingSize: (_scanResult!['serving_size'] ?? 100).toDouble(),
+      calories: ((_scanResult!['calories'] ?? 0).toDouble() * f),
+      proteinG: ((_scanResult!['protein_g'] ?? 0).toDouble() * f),
+      carbsG: ((_scanResult!['carbs_g'] ?? 0).toDouble() * f),
+      fatG: ((_scanResult!['fat_g'] ?? 0).toDouble() * f),
+      servingSize: servingSize,
       servingUnit: _scanResult!['serving_unit'] ?? 'g',
+      mealType: mealType,
     );
     await svc.logFood(log);
     if (mounted) {
@@ -87,20 +90,22 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
     }
   }
 
-  Future<void> _logSearchResult(Map<String, dynamic> item) async {
+  void _logSearchResult(Map<String, dynamic> item, double servingSize, String mealType) async {
     final user = ref.read(authProvider).user;
     if (user == null) return;
 
+    final f = servingSize / 100;
     final svc = ref.read(firestoreServiceProvider);
     final log = FoodLog(
       userId: user.uid,
       foodName: item['food_name'] ?? 'Unknown',
-      calories: (item['calories_per_100g'] as num?)?.toDouble() ?? 0,
-      proteinG: (item['protein_g'] as num?)?.toDouble() ?? 0,
-      carbsG: (item['carbs_g'] as num?)?.toDouble() ?? 0,
-      fatG: (item['fat_g'] as num?)?.toDouble() ?? 0,
-      servingSize: 100,
+      calories: ((item['calories_per_100g'] as num?)?.toDouble() ?? 0) * f,
+      proteinG: ((item['protein_g'] as num?)?.toDouble() ?? 0) * f,
+      carbsG: ((item['carbs_g'] as num?)?.toDouble() ?? 0) * f,
+      fatG: ((item['fat_g'] as num?)?.toDouble() ?? 0) * f,
+      servingSize: servingSize,
       servingUnit: 'g',
+      mealType: mealType,
     );
     await svc.logFood(log);
     if (mounted) {
@@ -155,6 +160,8 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
   }
 
   Widget _buildBody(AsyncValue<List<FoodLog>> logsAsync) {
+    final theme = Theme.of(context);
+
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -166,39 +173,54 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
       );
     }
 
+    const mealOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+    final logs = logsAsync.valueOrNull ?? [];
+    final grouped = <String, List<FoodLog>>{};
+    for (final m in mealOrder) grouped[m] = [];
+    for (final log in logs) {
+      grouped.putIfAbsent(log.mealType, () => []).add(log);
+    }
+
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
         if (_searchResults.isNotEmpty) ...[
           ..._searchResults.map((item) => SearchResultTile(
             item: item,
-            onLog: () => _logSearchResult(item),
+            onLog: (size, meal) => _logSearchResult(item, size, meal),
           )),
           const Divider(height: 32),
         ],
-        Text('Today\'s Log', style: Theme.of(context).textTheme.titleMedium),
+        Text('Today\'s Log', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        logsAsync.when(
-          data: (logs) {
-            if (logs.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text('No food logged today', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                ),
-              );
-            }
-            return Column(
-              children: logs.map((log) => ListTile(
-                dense: true,
-                title: Text(log.foodName),
-                trailing: Text('${log.calories.toInt()} kcal', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-              )).toList(),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('Error: $e'),
-        ),
+        ...mealOrder.where((m) => grouped[m]!.isNotEmpty).expand((meal) {
+          final mealLogs = grouped[meal]!;
+          final mealCals = mealLogs.fold(0, (sum, l) => sum + l.calories.toInt());
+          return [
+            Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(meal, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+                  Text('${mealCals} kcal', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                ],
+              ),
+            ),
+            ...mealLogs.map((log) => ListTile(
+              dense: true,
+              title: Text(log.foodName),
+              trailing: Text('${log.calories.toInt()} kcal', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+            )),
+          ];
+        }),
+        if (logs.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text('No food logged today', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ),
+          ),
       ],
     );
   }

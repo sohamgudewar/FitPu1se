@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final class SearchResultTile extends StatelessWidget {
   final Map<String, dynamic> item;
-  final VoidCallback? onLog;
+  final void Function(double servingSize, String mealType)? onLog;
   const SearchResultTile({super.key, required this.item, this.onLog});
 
   @override
@@ -31,13 +31,64 @@ final class SearchResultTile extends StatelessWidget {
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline),
-                    onPressed: onLog,
+                    onPressed: () => _showLogDialog(context),
                     tooltip: 'Log this food',
                   ),
                 ],
               ],
             )
           : null,
+    );
+  }
+
+  void _showLogDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final ctrl = TextEditingController(text: '100');
+    String mealType = 'Snack';
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              title: Text(item['food_name'] ?? 'Log food'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: ctrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Serving size (g)', isDense: true),
+                  ),
+                  const SizedBox(height: 12),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'Breakfast', label: Text('Breakfast')),
+                      ButtonSegment(value: 'Lunch', label: Text('Lunch')),
+                      ButtonSegment(value: 'Dinner', label: Text('Dinner')),
+                      ButtonSegment(value: 'Snack', label: Text('Snack')),
+                    ],
+                    selected: {mealType},
+                    onSelectionChanged: (s) => setDialogState(() => mealType = s.first),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                FilledButton(
+                  onPressed: () {
+                    final size = double.tryParse(ctrl.text) ?? 100;
+                    Navigator.pop(ctx);
+                    onLog!(size, mealType);
+                  },
+                  child: const Text('Log'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
