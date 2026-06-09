@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../app/api_service.dart';
 import '../../../app/auth_provider.dart';
 import '../../../services/firestore_service.dart';
+import '../widgets/comparison_screen.dart';
 
 final class PhotosScreen extends ConsumerStatefulWidget {
   const PhotosScreen({super.key});
@@ -15,6 +16,7 @@ final class PhotosScreen extends ConsumerStatefulWidget {
 
 class _PhotosScreenState extends ConsumerState<PhotosScreen> {
   bool _uploading = false;
+  final Set<int> _selected = {};
 
   Future<void> _pickAndUpload() async {
     final picker = ImagePicker();
@@ -38,14 +40,43 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
     }
   }
 
+  void _toggleSelect(int index) {
+    setState(() {
+      if (_selected.contains(index)) {
+        _selected.remove(index);
+      } else {
+        if (_selected.length >= 2) _selected.remove(_selected.first);
+        _selected.add(index);
+      }
+    });
+  }
+
+  void _openComparison(List<String> photos) {
+    if (_selected.length != 2) return;
+    final sorted = _selected.toList()..sort();
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => ComparisonScreen(
+        image1: photos[sorted[0]],
+        image2: photos[sorted[1]],
+      ),
+    ));
+    setState(() => _selected.clear());
+  }
+
   @override
   Widget build(BuildContext context) {
     final photosAsync = ref.watch(photoUrlsProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Photos'),
+        title: Text(_selected.length == 2 ? 'Tap to compare' : 'Photos'),
         actions: [
+          if (_selected.length == 2)
+            IconButton(
+              icon: const Icon(Icons.compare_arrows),
+              onPressed: photosAsync.valueOrNull != null ? () => _openComparison(photosAsync.valueOrNull!) : null,
+            ),
           IconButton(
             icon: _uploading
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
@@ -60,11 +91,11 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.photo_library_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
+                    Icon(Icons.photo_library_outlined, size: 64, color: theme.colorScheme.outline),
                     const SizedBox(height: 16),
-                    Text('No photos yet', style: Theme.of(context).textTheme.bodyLarge),
+                    Text('No photos yet', style: theme.textTheme.bodyLarge),
                     const SizedBox(height: 8),
-                    Text('Tap + to upload a progress photo', style: Theme.of(context).textTheme.bodySmall),
+                    Text('Tap + to upload a progress photo', style: theme.textTheme.bodySmall),
                   ],
                 ),
               )
@@ -72,10 +103,31 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
                 padding: const EdgeInsets.all(4),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 4, mainAxisSpacing: 4),
                 itemCount: photos.length,
-                itemBuilder: (_, i) => ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(photos[i], fit: BoxFit.cover),
-                ),
+                itemBuilder: (_, i) {
+                  final selected = _selected.contains(i);
+                  return GestureDetector(
+                    onLongPress: () => _toggleSelect(i),
+                    onTap: selected ? () => _toggleSelect(i) : null,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(photos[i], fit: BoxFit.cover),
+                        ),
+                        if (selected)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: theme.colorScheme.primary, width: 2),
+                            ),
+                            child: Icon(Icons.check_circle, color: theme.colorScheme.primary, size: 28),
+                          ),
+                      ],
+                    ),
+                  );
+                },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),

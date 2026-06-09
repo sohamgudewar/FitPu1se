@@ -58,6 +58,7 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 1. **V2 Session 1: Design System** — `google_fonts`, `shimmer`, `lottie` added; purple `#6C63FF` seed; DM Sans body + Syne display fonts; `ThemeOption` provider (system/light/dark toggle); refined Card, Input, FilledButton, NavBar, SnackBar styles ✅
 2. **V2 Session 2: Home** — Animated calorie ring (`CustomPainter` with `AnimationController` + `CurvedAnimation`); macro bars (Carbs/Protein/Fat with `LinearProgressIndicator`); macro providers in firestore_service ✅
 3. **V2 Session 3: Exercises** — Checkbox per exercise, rest timer dialog (circular countdown, pause/skip), workout completion summary dialog with stats ✅
+4. **V2 Session 4: Calories** — Editable serving qty in scan result card + search dialog; macros recalculate in real time; `mealType` field on FoodLog; today's entries grouped by Breakfast/Lunch/Dinner/Snack ✅
 
 ## Key URLs
 | Service | URL |
