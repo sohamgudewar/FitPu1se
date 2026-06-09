@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 final class CacheService {
@@ -9,7 +10,11 @@ final class CacheService {
   static late Box<String> _box;
 
   static Future<void> init() async {
-    await Hive.initFlutter();
+    if (kIsWeb) {
+      await Hive.init();
+    } else {
+      await Hive.initFlutter();
+    }
     _box = await Hive.openBox<String>(_boxName);
   }
 

@@ -36,8 +36,8 @@ final class MacroBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: fraction,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-              color: color,
+              trackColor: theme.colorScheme.surfaceContainerHighest,
+              valueColor: color,
               minHeight: 8,
             ),
           ),

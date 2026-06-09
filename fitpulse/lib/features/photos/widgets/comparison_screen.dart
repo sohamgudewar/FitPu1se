@@ -67,7 +67,7 @@ final class _GuidePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
+      ..color = Colors.white.withOpacity(0.15)
       ..strokeWidth = 1;
 
     final center = Offset(size.width / 2, size.height / 2);
@@ -76,7 +76,7 @@ final class _GuidePainter extends CustomPainter {
     canvas.drawLine(Offset(0, center.dy), Offset(size.width, center.dy), paint);
 
     paint.strokeWidth = 2;
-    paint.color = Colors.white.withValues(alpha: 0.08);
+    paint.color = Colors.white.withOpacity(0.08);
 
     canvas.drawCircle(center, size.width * 0.35, paint);
     canvas.drawRect(

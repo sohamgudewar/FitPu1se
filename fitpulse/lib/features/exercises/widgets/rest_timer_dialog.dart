@@ -75,8 +75,8 @@ final class _RestTimerDialogState extends State<RestTimerDialog> with SingleTick
                 CircularProgressIndicator(
                   value: progress,
                   strokeWidth: 8,
-                  color: theme.colorScheme.primary,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  valueColor: theme.colorScheme.primary,
+                  trackColor: theme.colorScheme.surfaceContainerHighest,
                 ),
                 Text('$minutes:$seconds', style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
               ],

@@ -118,7 +118,7 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
                         if (selected)
                           Container(
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: theme.colorScheme.primary, width: 2),
                             ),
