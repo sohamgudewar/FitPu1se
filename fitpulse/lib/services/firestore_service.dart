@@ -17,6 +17,21 @@ final todayCaloriesProvider = Provider<double>((ref) {
   return logs.valueOrNull?.fold<double>(0, (total, l) => total + l.calories) ?? 0;
 });
 
+final todayProteinProvider = Provider<double>((ref) {
+  final logs = ref.watch(todayFoodLogsProvider);
+  return logs.valueOrNull?.fold<double>(0, (total, l) => total + l.proteinG) ?? 0;
+});
+
+final todayCarbsProvider = Provider<double>((ref) {
+  final logs = ref.watch(todayFoodLogsProvider);
+  return logs.valueOrNull?.fold<double>(0, (total, l) => total + l.carbsG) ?? 0;
+});
+
+final todayFatProvider = Provider<double>((ref) {
+  final logs = ref.watch(todayFoodLogsProvider);
+  return logs.valueOrNull?.fold<double>(0, (total, l) => total + l.fatG) ?? 0;
+});
+
 final streakProvider = FutureProvider<int>((ref) async {
   final user = ref.watch(authProvider).user;
   if (user == null) return 0;

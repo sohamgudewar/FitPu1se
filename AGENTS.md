@@ -43,14 +43,19 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 - Repo: `https://github.com/sohamgudewar/FitPu1se`
 - `.gitignore` excludes `.venv`, `__pycache__`, `build/web`, `.env`
 
-## Session Summary (June 9, 2026)
-1. Fixed Firestore persistence — FoodLog model, firestore_service.dart with providers
-2. Updated Home tab with real calorie total + streak from Firestore
-3. Fixed Photos tab to persist to Firestore
-4. Deployed frontend to Firebase Hosting
-5. Set up GitHub Actions for frontend auto-deploy
-6. Set up backend deploy to Railway via GitHub Actions (failed with CLI) → switched to Railway native GitHub integration ✅
-7. Fixed Google Sign-In on Flutter Web — added meta tag, switched to FirebaseAuth.signInWithPopup, configured OAuth JavaScript origins + redirect URIs ✅
+## V2 Session Plan
+| # | Area | What |
+|---|------|------|
+| 1 | Design | Purple `#6C63FF` accent, DM Sans + Syne fonts, dark mode toggle, refined ThemeData |
+| 2 | Home | Animated calorie ring (CustomPainter), macro bars (carbs/protein/fat) |
+| 3 | Exercises | Rest timer between sets, workout completion summary dialog |
+| 4 | Calories | Editable food quantities, per-meal grouping |
+| 5 | Photos | Side-by-side comparison, pose overlay guide with photo_view |
+| 6 | Offline | Hive cache for food search + exercise list with TTL |
+| 7 | Layout | Responsive desktop (side nav) vs mobile (bottom nav) |
+
+## Session Summary (June 10, 2026)
+1. **V2 Session 1: Design System** — `google_fonts`, `shimmer`, `lottie` added; purple `#6C63FF` seed; DM Sans body + Syne display fonts; `ThemeOption` provider (system/light/dark toggle); refined Card, Input, FilledButton, NavBar, SnackBar styles ✅
 
 ## Key URLs
 | Service | URL |

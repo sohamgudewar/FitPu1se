@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/auth_provider.dart';
 import '../../../services/firestore_service.dart';
+import '../widgets/calorie_ring.dart';
+import '../widgets/macro_bar.dart';
 
 final class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -11,10 +13,19 @@ final class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
     final todayCals = ref.watch(todayCaloriesProvider);
+    final protein = ref.watch(todayProteinProvider);
+    final carbs = ref.watch(todayCarbsProvider);
+    final fat = ref.watch(todayFatProvider);
     final streakAsync = ref.watch(streakProvider);
     final streak = streakAsync.valueOrNull ?? 0;
 
+    const goal = 2200;
+    const proteinGoal = 150;
+    const carbsGoal = 300;
+    const fatGoal = 65;
+
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,28 +37,35 @@ final class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Column(
                   children: [
                     Text('Today\'s Calories', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    Text(
-                      todayCals.toInt().toString(),
-                      style: theme.textTheme.displayLarge?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                    const SizedBox(height: 12),
+                    CalorieRing(consumed: todayCals, goal: goal),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          MacroBar(label: 'Carbs', current: carbs, goal: carbsGoal, color: Colors.blue),
+                          MacroBar(label: 'Protein', current: protein, goal: proteinGoal, color: colorScheme.primary),
+                          MacroBar(label: 'Fat', current: fat, goal: fatGoal, color: Colors.orange),
+                        ],
+                      ),
                     ),
-                    Text('/ 2200 kcal goal', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
