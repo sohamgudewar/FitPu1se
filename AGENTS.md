@@ -60,6 +60,7 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 3. **V2 Session 3: Exercises** — Checkbox per exercise, rest timer dialog (circular countdown, pause/skip), workout completion summary dialog with stats ✅
 4. **V2 Session 4: Calories** — Editable serving qty in scan result card + search dialog; macros recalculate in real time; `mealType` field on FoodLog; today's entries grouped by Breakfast/Lunch/Dinner/Snack ✅
 5. **V2 Session 5: Photos** — `photo_view` package; side-by-side comparison screen (long-press two photos, compare); pose overlay toggle (crosshair + body guide via CustomPainter) ✅
+6. **V2 Session 6: Offline** — `hive_flutter`; `CacheService` with 1h TTL for food search results + 7d TTL for exercise list; init in main.dart; wired to both calories search and exercises screens ✅
 
 ## Key URLs
 | Service | URL |
