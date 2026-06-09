@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
+import '../../../services/cache_service.dart';
 import '../data/workouts.dart';
 import '../widgets/rest_timer_dialog.dart';
 import '../widgets/workout_summary_dialog.dart';
@@ -13,6 +15,25 @@ final class ExercisesScreen extends StatefulWidget {
 
 final class _ExercisesScreenState extends State<ExercisesScreen> {
   final Map<int, Set<int>> _completed = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _warmCache();
+  }
+
+  void _warmCache() {
+    final cached = CacheService.getCachedExercises();
+    if (cached != null) return;
+    CacheService.cacheExercises(jsonEncode(workouts.map((d) => {
+      'name': d.name,
+      'exercises': d.exercises.map((e) => {
+        'name': e.name,
+        'sets': e.sets,
+        'reps': e.reps,
+      }).toList(),
+    }).toList()));
+  }
 
   int _completedCount(WorkoutDay day, int dayIndex) =>
       _completed[dayIndex]?.length ?? 0;

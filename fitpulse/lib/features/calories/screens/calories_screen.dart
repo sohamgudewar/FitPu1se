@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../app/api_service.dart';
 import '../../../app/auth_provider.dart';
 import '../../../models/food_log.dart';
+import '../../../services/cache_service.dart';
 import '../../../services/firestore_service.dart';
 import '../widgets/scan_result_card.dart';
 import '../widgets/search_result_tile.dart';
@@ -53,8 +54,19 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
   Future<void> _search(String query) async {
     if (query.trim().isEmpty) return;
     setState(() => _loading = true);
+
+    final cached = CacheService.getCachedFoodSearch(query.trim());
+    if (cached != null) {
+      setState(() {
+        _searchResults = cached;
+        _loading = false;
+      });
+      return;
+    }
+
     try {
       final results = await ApiService.searchFood(query.trim());
+      await CacheService.cacheFoodSearch(query.trim(), results);
       setState(() => _searchResults = results);
     } catch (e) {
       if (mounted) {
