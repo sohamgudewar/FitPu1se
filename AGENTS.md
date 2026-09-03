@@ -11,7 +11,7 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 
 ## Architecture
 - **Frontend**: Flutter web → Firebase Hosting → `https://fitpu1se.web.app`
-- **Backend**: FastAPI → Railway → `https://just-transformation-production-99ff.up.railway.app`
+- **Backend**: FastAPI with historical Railway URL `https://just-transformation-production-99ff.up.railway.app` (the documented `/health` URL returned HTTP 404 during the 3 September 2026 audit; do not claim it is live without re-verification)
 - **Auth**: Google Sign-In via Firebase Auth (FirebaseAuth.signInWithPopup)
 - **Database**: Firestore (food_logs, photos, users collections)
 - **AI**: Google Gemini 3 Flash Preview (food scan via backend)
@@ -21,7 +21,7 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 
 ### Backend
 - FastAPI app with `/health`, `POST /api/scan-food` (Gemini), `GET /api/search-food` (USDA proxy)
-- Deployed to Railway, connected to GitHub for auto-deploy
+- Railway deployment was recorded in earlier session notes, but the documented health URL is not currently verified
 - CORS configured for frontend origin
 
 ### Frontend
@@ -67,7 +67,7 @@ Build FitPulse: an AI-powered fitness tracker with Flutter web frontend + FastAP
 | Service | URL |
 |---------|-----|
 | Frontend | https://fitpu1se.web.app |
-| Backend API | https://just-transformation-production-99ff.up.railway.app |
+| Backend API | Historical URL: https://just-transformation-production-99ff.up.railway.app (currently unverified; `/health` returned 404 on 3 September 2026) |
 | GitHub | https://github.com/sohamgudewar/FitPu1se |
 | Firebase Console | https://console.firebase.google.com/project/fitpu1se |
 | Railway Dashboard | https://railway.app/dashboard |
